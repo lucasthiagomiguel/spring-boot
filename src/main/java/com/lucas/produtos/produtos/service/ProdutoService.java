@@ -7,6 +7,7 @@ import com.lucas.produtos.produtos.model.Produto;
 import com.lucas.produtos.produtos.repository.ProdutoRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,9 +53,11 @@ public class ProdutoService {
     }
 
     public void deletar(Long id) {
-        if (!repo.existsById(id)) {
-            throw new NotFoundException("Produto não encontrado!");
-        }
-        repo.deleteById(id);
+        Produto produto = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado!"));
+
+        produto.setDeleted(true);
+        produto.setDeletedAt(LocalDateTime.now());
+        repo.save(produto);
     }
 }
